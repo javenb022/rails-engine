@@ -1,3 +1,2 @@
 class Transaction < ApplicationRecord
-  
 end

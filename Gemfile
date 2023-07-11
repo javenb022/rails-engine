@@ -43,7 +43,6 @@ group :development, :test do
   gem "capybara"
   gem "factory_bot_rails"
   gem "faker"
-  gem "launchy"
   gem "pry"
   gem "rspec-rails"
   gem "shoulda-matchers"
@@ -54,4 +53,8 @@ group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
   gem "rubocop-rails"
+end
+
+gem "jsonapi-serializer"
+group :test do
 end

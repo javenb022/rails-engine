@@ -204,4 +204,49 @@ RSpec.describe "Items API" do
       expect(item.merchant_id).to_not eq(99999999)
     end
   end
+
+  describe "DELETE /api/v1/items/:id" do
+    it "deletes an item" do
+      merchant = create(:merchant)
+      customer = create(:customer)
+      item = merchant.items.create(name: "Soap", description: "Cleans your hands well", unit_price: 10.99)
+      item2 = merchant.items.create(name: "Body Wash", description: "Cleans your body well", unit_price: 12.99)
+      # invoice = Invoice.create(customer_id: customer.id, merchant_id: merchant.id, status: "shipped")
+      # invoice_item = InvoiceItem.create(item_id: item.id, invoice_id: invoice.id, quantity: 1, unit_price: 10.99)
+      # invoice_item2 = InvoiceItem.create(item_id: item2.id, invoice_id: invoice.id, quantity: 1, unit_price: 12.99)
+
+      delete "/api/v1/items/#{item.id}"
+
+      expect(response).to be_successful
+      expect(response.status).to eq(200)
+
+      expect(merchant.items.count).to eq(1)
+      expect(merchant.items).to_not include(item)
+
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json).to have_key(:status)
+      expect(json[:status]).to eq("no_content")
+    end
+  end
+
+  describe "GET /api/v1/items/:id/merchant" do
+    it "returns the merchant for an item" do
+      merchant = create(:merchant)
+      item = merchant.items.create(name: "Soap", description: "Cleans your hands well", unit_price: 10.99)
+
+      get "/api/v1/items/#{item.id}/merchant"
+
+      expect(response).to be_successful
+      expect(response.status).to eq(200)
+
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json[:data]).to have_key(:id)
+      expect(json[:data][:id].to_i).to eq(merchant.id)
+
+      expect(json[:data][:attributes]).to have_key(:name)
+      expect(json[:data][:attributes][:name]).to eq(merchant.name)
+    end
+  end
 end

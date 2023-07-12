@@ -186,7 +186,22 @@ RSpec.describe "Items API" do
     end
 
     it "returns an error if the merchant id is invalid" do
-      
+      merchant = create(:merchant)
+      item = merchant.items.create(name: "Soap", description: "Cleans your body well", unit_price: 10.99)
+
+      patch "/api/v1/items/#{item.id}", params: {
+        merchant_id: 99999999
+      }
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(400)
+
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json[:error]).to eq("Merchant must exist")
+
+      expect(item.merchant_id).to eq(merchant.id)
+      expect(item.merchant_id).to_not eq(99999999)
     end
   end
 end

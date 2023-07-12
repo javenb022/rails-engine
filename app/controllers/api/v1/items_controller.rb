@@ -21,7 +21,7 @@ class Api::V1::ItemsController < ApplicationController
     if item.update(item_params)
       render json: ItemSerializer.new(item)
     else
-      render json: { error: item.errors.full_messages.to_sentence }, status: :unprocessable_entity
+      render json: { error: item.errors.full_messages.to_sentence }, status: "400"
     end
   end
 

@@ -211,22 +211,50 @@ RSpec.describe "Items API" do
       customer = create(:customer)
       item = merchant.items.create(name: "Soap", description: "Cleans your hands well", unit_price: 10.99)
       item2 = merchant.items.create(name: "Body Wash", description: "Cleans your body well", unit_price: 12.99)
-      # invoice = Invoice.create(customer_id: customer.id, merchant_id: merchant.id, status: "shipped")
-      # invoice_item = InvoiceItem.create(item_id: item.id, invoice_id: invoice.id, quantity: 1, unit_price: 10.99)
-      # invoice_item2 = InvoiceItem.create(item_id: item2.id, invoice_id: invoice.id, quantity: 1, unit_price: 12.99)
 
       delete "/api/v1/items/#{item.id}"
 
       expect(response).to be_successful
-      expect(response.status).to eq(200)
+      expect(response.status).to eq(204)
 
       expect(merchant.items.count).to eq(1)
       expect(merchant.items).to_not include(item)
+    end
 
-      json = JSON.parse(response.body, symbolize_names: true)
+    it "deletes the invoice if it is the only item on the invoice" do
+      merchant = create(:merchant)
+      customer = create(:customer)
+      item = merchant.items.create(name: "Soap", description: "Cleans your hands well", unit_price: 10.99)
+      invoice = Invoice.create(customer_id: customer.id, merchant_id: merchant.id, status: "shipped")
+      invoice_item = InvoiceItem.create(item_id: item.id, invoice_id: invoice.id, quantity: 1, unit_price: 10.99)
 
-      expect(json).to have_key(:status)
-      expect(json[:status]).to eq("no_content")
+      expect(Invoice.count).to eq(1)
+
+      delete "/api/v1/items/#{item.id}"
+
+      expect(response).to be_successful
+      expect(response.status).to eq(204)
+      expect(Invoice.count).to eq(0)
+      expect { Invoice.find(invoice.id) }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "does not delete the invoice if there are other items on the invoice" do
+      merchant = create(:merchant)
+      customer = create(:customer)
+      item = merchant.items.create(name: "Soap", description: "Cleans your hands well", unit_price: 10.99)
+      item2 = merchant.items.create(name: "Body Wash", description: "Cleans your body well", unit_price: 12.99)
+      invoice = Invoice.create(customer_id: customer.id, merchant_id: merchant.id, status: "shipped")
+      invoice_item = InvoiceItem.create(item_id: item.id, invoice_id: invoice.id, quantity: 1, unit_price: 10.99)
+      invoice_item2 = InvoiceItem.create(item_id: item2.id, invoice_id: invoice.id, quantity: 1, unit_price: 12.99)
+
+      expect(Invoice.count).to eq(1)
+
+      delete "/api/v1/items/#{item.id}"
+
+      expect(response).to be_successful
+      expect(response.status).to eq(204)
+      expect(Invoice.count).to eq(1)
+      expect { Invoice.find(invoice.id) }.to_not raise_error
     end
   end
 

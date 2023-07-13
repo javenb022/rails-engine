@@ -26,7 +26,9 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def destroy
-    render json: { status: :no_content } if Item.delete(params[:id])
+    item = Item.find(params[:id])
+    item.destroy
+    item.invoice_delete
   end
 
   private

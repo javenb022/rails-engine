@@ -3,11 +3,10 @@ class Item < ApplicationRecord
   has_many :invoice_items, dependent: :delete_all
   has_many :invoices, through: :invoice_items
   has_many :customers, through: :invoices
-  validates :name, :description, :unit_price, :merchant_id, presence: true#, allow_blank: false
-
+  validates :name, :description, :unit_price, :merchant_id, presence: true # , allow_blank: false
 
   def self.find_all(name: nil, min_price: nil, max_price: nil)
-    if name != '' && name.present? && min_price.nil? && max_price.nil?
+    if name != "" && name.present? && min_price.nil? && max_price.nil?
       Item.search_by_name(name)
     elsif name.nil? && (min_price.to_f.positive? || max_price.to_f.positive?)
       Item.find_by_price(min_price:, max_price:)
@@ -21,12 +20,12 @@ class Item < ApplicationRecord
   end
 
   def self.find_by_price(min_price: nil, max_price: nil)
-    min_price = min_price.present? ? min_price: 0
-    max_price = max_price.present? ? max_price: 999_999
+    min_price = min_price.present? ? min_price : 0
+    max_price = max_price.present? ? max_price : 999_999
     Item.where("unit_price BETWEEN ? AND ?", min_price, max_price)
   end
 
   def invoice_delete
-    Invoice.left_joins(:invoice_items).group(:id).having('COUNT(invoice_items.id) = 0').destroy_all
+    Invoice.left_joins(:invoice_items).group(:id).having("COUNT(invoice_items.id) = 0").destroy_all
   end
 end

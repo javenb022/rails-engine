@@ -34,15 +34,15 @@ RSpec.describe Item, type: :model do
 
   describe "class methods" do
     it "find_all" do
-      expect(Item.find_all(name: 'ring')).to eq([@item_1, @item_2])
+      expect(Item.find_all(name: "ring")).to eq([@item_1, @item_2])
       expect(Item.find_all(min_price: 100, max_price: 200)).to eq([@item_1, @item_2])
       expect(Item.find_all(min_price: 100)).to eq([@item_1, @item_2, @item_3])
       expect(Item.find_all(max_price: 200)).to eq([@item_1, @item_2])
-      expect(Item.find_all(name: '', min_price: nil, max_price: nil)).to eq(false)
+      expect(Item.find_all(name: "", min_price: nil, max_price: nil)).to eq(false)
     end
 
     it "search_by_name" do
-      expect(Item.search_by_name('ring')).to eq([@item_1, @item_2])
+      expect(Item.search_by_name("ring")).to eq([@item_1, @item_2])
     end
 
     it "find_by_price" do

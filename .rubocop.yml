@@ -2449,7 +2449,7 @@ Lint/UselessAccessModifier:
 Lint/UselessAssignment:
   Description: 'Checks for useless assignment to a local variable.'
   StyleGuide: '#underscore-unused-vars'
-  Enabled: true
+  Enabled: false
   VersionAdded: '0.11'
 
 Lint/UselessElseWithoutRescue:

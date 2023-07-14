@@ -91,7 +91,7 @@ RSpec.describe "Items API" do
         name: "Soap",
         description: "Cleans your body well",
         unit_price: 10.99,
-        merchant_id: "#{merchant.id}"
+        merchant_id: merchant.id.to_s
       }
 
       expect(response).to be_successful
@@ -125,7 +125,7 @@ RSpec.describe "Items API" do
         # name: "Soap",
         # description: "Cleans your body well",
         unit_price: 10.99,
-        merchant_id: "#{merchant.id}"
+        merchant_id: merchant.id.to_s
       }
 
       expect(response).to_not be_successful
@@ -143,7 +143,7 @@ RSpec.describe "Items API" do
         name: "Soap",
         description: "Cleans your body well",
         unit_price: 10.99,
-        merchant_id: "#{merchant.id}",
+        merchant_id: merchant.id.to_s,
         color: "blue"
       }
 
@@ -225,7 +225,7 @@ RSpec.describe "Items API" do
       item = merchant.items.create(name: "Soap", description: "Cleans your body well", unit_price: 10.99)
 
       patch "/api/v1/items/#{item.id}", params: {
-        merchant_id: 99999999
+        merchant_id: 99_999_999
       }
 
       expect(response).to_not be_successful
@@ -236,7 +236,7 @@ RSpec.describe "Items API" do
       expect(json[:error]).to eq("Merchant must exist")
 
       expect(item.merchant_id).to eq(merchant.id)
-      expect(item.merchant_id).to_not eq(99999999)
+      expect(item.merchant_id).to_not eq(99_999_999)
     end
   end
 

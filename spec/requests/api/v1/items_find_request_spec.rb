@@ -29,5 +29,44 @@ RSpec.describe "Items API" do
       expect(item_response[:data][:attributes]).to have_key(:unit_price)
       expect(item_response[:data][:attributes][:unit_price]).to eq(item_1.unit_price)
     end
+
+    it "returns a single item that matches a min_price search term" do
+      merchant = create(:merchant)
+      item_1 = create(:item, unit_price: 100, merchant_id: merchant.id)
+      item_2 = create(:item, unit_price: 200, merchant_id: merchant.id)
+      item_3 = create(:item, unit_price: 300, merchant_id: merchant.id)
+      item_4 = create(:item, unit_price: 400, merchant_id: merchant.id)
+
+      get "/api/v1/items/find", params: { min_price: 200 }
+
+      expect(response).to be_successful
+      expect(response.status).to eq(200)
+
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json[:data].count).to eq(3)
+      expect(json[:data][0][:attributes][:name]).to eq(item_2.name)
+      expect(json[:data][1][:attributes][:name]).to eq(item_3.name)
+      expect(json[:data][2][:attributes][:name]).to eq(item_4.name)
+    end
+
+    it "returns a single item that matches a max_price search term" do
+      merchant = create(:merchant)
+      item_1 = create(:item, unit_price: 100, merchant_id: merchant.id)
+      item_2 = create(:item, unit_price: 200, merchant_id: merchant.id)
+      item_3 = create(:item, unit_price: 300, merchant_id: merchant.id)
+      item_4 = create(:item, unit_price: 400, merchant_id: merchant.id)
+
+      get "/api/v1/items/find", params: { max_price: 200 }
+
+      expect(response).to be_successful
+      expect(response.status).to eq(200)
+
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json[:data].count).to eq(2)
+      expect(json[:data][0][:attributes][:name]).to eq(item_1.name)
+      expect(json[:data][1][:attributes][:name]).to eq(item_2.name)
+    end
   end
 end

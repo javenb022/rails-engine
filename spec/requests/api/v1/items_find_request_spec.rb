@@ -14,20 +14,20 @@ RSpec.describe "Items API" do
 
       item_response = JSON.parse(response.body, symbolize_names: true)
 
-      expect(item_response[:data]).to have_key(:id)
-      expect(item_response[:data][:id].to_i).to eq(item_1.id)
-      expect(item_response[:data][:id].to_i).to_not eq(item_2.id)
+      expect(item_response[:data][0]).to have_key(:id)
+      expect(item_response[:data][0][:id].to_i).to eq(item_1.id)
+      expect(item_response[:data][0][:id].to_i).to_not eq(item_2.id)
 
-      expect(item_response[:data][:attributes]).to have_key(:name)
-      expect(item_response[:data][:attributes][:name]).to eq(item_1.name)
-      expect(item_response[:data][:attributes][:name]).to_not eq(item_2.name)
+      expect(item_response[:data][0][:attributes]).to have_key(:name)
+      expect(item_response[:data][0][:attributes][:name]).to eq(item_1.name)
+      expect(item_response[:data][0][:attributes][:name]).to_not eq(item_2.name)
 
-      expect(item_response[:data][:attributes]).to have_key(:description)
-      expect(item_response[:data][:attributes][:description]).to eq(item_1.description)
-      expect(item_response[:data][:attributes][:description]).to_not eq(item_2.description)
+      expect(item_response[:data][0][:attributes]).to have_key(:description)
+      expect(item_response[:data][0][:attributes][:description]).to eq(item_1.description)
+      expect(item_response[:data][0][:attributes][:description]).to_not eq(item_2.description)
 
-      expect(item_response[:data][:attributes]).to have_key(:unit_price)
-      expect(item_response[:data][:attributes][:unit_price]).to eq(item_1.unit_price)
+      expect(item_response[:data][0][:attributes]).to have_key(:unit_price)
+      expect(item_response[:data][0][:attributes][:unit_price]).to eq(item_1.unit_price)
     end
 
     it "returns a single item that matches a min_price search term" do

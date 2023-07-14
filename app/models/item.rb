@@ -7,8 +7,8 @@ class Item < ApplicationRecord
 
 
   def self.find_all(name: nil, min_price: nil, max_price: nil)
-    if name.present? && name != '' && min_price.nil? && max_price.nil?
-      Item.find_by_name(name)
+    if name != '' && name.present? && min_price.nil? && max_price.nil?
+      Item.search_by_name(name)
     elsif name.nil? && (min_price.to_f.positive? || max_price.to_f.positive?)
       Item.find_by_price(min_price:, max_price:)
     else
@@ -17,7 +17,7 @@ class Item < ApplicationRecord
   end
 
   def self.search_by_name(name)
-    Item.where("name ILIKE ?", "%#{name}%").order(:name).first
+    Item.where("name ILIKE ?", "%#{name}%").order(:name)
   end
 
   def self.find_by_price(min_price: nil, max_price: nil)

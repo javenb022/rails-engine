@@ -29,6 +29,17 @@ RSpec.describe "Items API" do
         expect(item[:attributes][:merchant_id]).to be_an(Integer)
       end
     end
+
+    it "returns an empty array if there are no items" do
+      get "/api/v1/items"
+
+      expect(response).to be_successful
+      expect(response.status).to eq(200)
+
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json[:data]).to eq([])
+    end
   end
 
   describe "GET /api/v1/items/:id" do
@@ -57,6 +68,18 @@ RSpec.describe "Items API" do
 
       expect(item_response[:data][:attributes]).to have_key(:merchant_id)
       expect(item_response[:data][:attributes][:merchant_id]).to be_an(Integer)
+    end
+
+    it "returns an error if the item id is invalid" do
+      get "/api/v1/items/99999999"
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json[:errors][0][:status]).to eq("404")
+      expect(json[:errors][0][:title]).to eq("Couldn't find Item with 'id'=99999999")
     end
   end
 
@@ -185,6 +208,18 @@ RSpec.describe "Items API" do
       expect(json[:data][:attributes][:merchant_id]).to be_an(Integer)
     end
 
+    it "returns an error if an item can't be found" do
+      patch "/api/v1/items/10", params: { name: "Soap" }
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json[:errors][0][:status]).to eq("404")
+      expect(json[:errors][0][:title]).to eq("Couldn't find Item with 'id'=10")
+    end
+
     it "returns an error if the merchant id is invalid" do
       merchant = create(:merchant)
       item = merchant.items.create(name: "Soap", description: "Cleans your body well", unit_price: 10.99)
@@ -256,6 +291,18 @@ RSpec.describe "Items API" do
       expect(Invoice.count).to eq(1)
       expect { Invoice.find(invoice.id) }.to_not raise_error
     end
+
+    it "returns an error if the item can't be found" do
+      delete "/api/v1/items/9"
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json[:errors][0][:status]).to eq("404")
+      expect(json[:errors][0][:title]).to eq("Couldn't find Item with 'id'=9")
+    end
   end
 
   describe "GET /api/v1/items/:id/merchant" do
@@ -275,6 +322,18 @@ RSpec.describe "Items API" do
 
       expect(json[:data][:attributes]).to have_key(:name)
       expect(json[:data][:attributes][:name]).to eq(merchant.name)
+    end
+
+    it "returns an error if the item can't be found" do
+      get "/api/v1/items/10/merchant"
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      json = JSON.parse(response.body, symbolize_names: true)
+
+      expect(json[:errors][0][:status]).to eq("404")
+      expect(json[:errors][0][:title]).to eq("Couldn't find Item with 'id'=10")
     end
   end
 end
